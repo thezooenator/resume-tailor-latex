@@ -1,0 +1,39 @@
+% ===========================================================================
+%  SKILLS & INTERESTS
+%  One block per resume.  These are presets; there is no tier-3 here because
+%  a skills line is already a single line.
+% ===========================================================================
+
+% --- Flat blocks (skills last, the normal layout) -------------------------
+\newcommand{\SkillsSWE}{%
+  \begin{skills}
+  \skill{Languages}{TypeScript, JavaScript, Python, Java, SQL, HTML/CSS}
+  \skill{Frameworks \& Tools}{React, Node.js, PostgreSQL, AWS, Docker, Git, Jest}
+  \skill{Interests}{Cycling, Chess, Photography}
+  \end{skills}}
+
+\newcommand{\SkillsML}{%
+  \begin{skills}
+  \skill{Languages}{Python, SQL, TypeScript, Java}
+  \skill{Frameworks \& Tools}{PyTorch, NumPy, pandas, scikit-learn, Docker, AWS, Git}
+  \skill{Interests}{Cycling, Chess, Photography}
+  \end{skills}}
+
+% --- Grouped blocks (skills-early layout) ---------------------------------
+% Longer, categorised blocks built to sit directly under education.  Every
+% item here also appears in a flat block or a bullet -- nothing new is claimed.
+\newcommand{\SkillsGroupedSWE}{%
+  \begin{skills}
+  \skill{Languages}{TypeScript, JavaScript, Python, Java, SQL, HTML/CSS}
+  \skill{Web \& Backend}{React, Node.js, REST APIs, PostgreSQL}
+  \skill{Cloud \& Tooling}{AWS, Docker, Git, Jest, CI/CD}
+  \skill{Interests}{Cycling, Chess, Photography}
+  \end{skills}}
+
+\newcommand{\SkillsGroupedML}{%
+  \begin{skills}
+  \skill{Languages}{Python, SQL, TypeScript, Java}
+  \skill{Machine Learning}{PyTorch, scikit-learn, NumPy, pandas}
+  \skill{Cloud \& Tooling}{AWS, Docker, Git}
+  \skill{Interests}{Cycling, Chess, Photography}
+  \end{skills}}

@@ -1,0 +1,17 @@
+# Your job-search history -- build.py writes this, never commit it
+memory.json
+memory.json.bak
+
+# Build output
+GeneratedTex/
+OutputPDFs/
+*.pdf
+!example.pdf
+*.aux
+*.log
+*.out
+
+# Python / OS
+__pycache__/
+.DS_Store
+.env

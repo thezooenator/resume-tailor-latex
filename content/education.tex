@@ -1,0 +1,51 @@
+% ===========================================================================
+%  EDUCATION
+%
+%  TIER 1  presets      -- \UniversitySWE etc.  one line, the usual case
+%  TIER 2  entry lines  -- \UniversityEntry     the header line on its own
+%  TIER 3  bullets      -- \CoursesSWE          individual pieces
+%
+%  Presets are built from the bullets below them, so editing a bullet once
+%  updates the presets, any hand-built version, and the autofill resume.
+%
+%  Everything in content/ is EXAMPLE DATA for a fictional person.  Replace it
+%  with your own, keeping the three-tier structure.
+% ===========================================================================
+
+% --- Page header ----------------------------------------------------------
+\newcommand{\Header}{%
+  \name{Jordan Lee}
+  % Both setters are no-ops on the real resume; autofill mode prints them.
+  \linkedin{https://www.linkedin.com/in/example/}
+  \phoneplain{555-010-0199}
+  \contactinfo{123 Example St}{Springfield, ST 00000}{(555) 010-0199}{jordan.lee@example.com}
+}
+
+% ---------------------------------------------------------------- TIER 3 --
+\newcommand{\UniversityEntry}{%
+  \entry{Example State University}{B.S. Computer Science\normalfont\ \ GPA: 3.8}{Springfield, ST | May 2026}}
+\newcommand{\UniversityEntryExpected}{%
+  \entry{Example State University}{B.S. Computer Science\normalfont\ \ GPA: 3.8}{Springfield, ST | Expected May 2026}}
+
+% Course lists -- pick exactly one
+\newcommand{\CoursesSWE}{\item Relevant Courses: Software Engineering, Data Structures \& Algorithms, Databases, Computer Systems, Distributed Systems, Computer Networks}
+\newcommand{\CoursesML}{\item Relevant Courses: Machine Learning, Deep Learning, Computer Vision, Linear Algebra, Probability \& Statistics, Data Structures \& Algorithms}
+
+% Others you have taken, to build a new list from:
+%   Operating Systems . Compilers . Human-Computer Interaction
+%   Robotics . Numerical Methods
+
+\newcommand{\UniversityExtras}{\item Extracurriculars: Robotics Club (Software Lead), Hackathon Organizing Committee, Intramural Soccer}
+
+% High school
+\newcommand{\HighSchoolEntry}{%
+  \entry{Springfield High School}{\normalfont GPA: 4.0}{Springfield, ST | Class of 2022}}
+\newcommand{\HighSchoolExtras}{\item Extracurriculars: FIRST Robotics (Captain), Math Team, Varsity Track, School Newspaper (Editor)}
+\newcommand{\HighSchoolExtrasShort}{\item Extracurriculars: FIRST Robotics (Captain), Math Team, Varsity Track}
+
+% ---------------------------------------------------------------- TIER 1 --
+\newcommand{\UniversitySWE}{\UniversityEntry\begin{bullets}\CoursesSWE\UniversityExtras\end{bullets}}
+\newcommand{\UniversityML}{\UniversityEntry\begin{bullets}\CoursesML\UniversityExtras\end{bullets}}
+
+\newcommand{\HighSchool}{\HighSchoolEntry\begin{bullets}\HighSchoolExtras\end{bullets}}
+\newcommand{\HighSchoolShort}{\HighSchoolEntry\begin{bullets}\HighSchoolExtrasShort\end{bullets}}

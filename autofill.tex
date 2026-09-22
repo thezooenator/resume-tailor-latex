@@ -1,0 +1,34 @@
+% ===========================================================================
+%  AUTOFILL RESUME
+%
+%  For job sites that parse an uploaded resume to prefill their form.
+%  Same content commands as the real resumes -- only [autofill] changes the
+%  layout: no flush-right dates, no rules, plain bullets, one font size.
+%  Length is not constrained; two pages is fine here.
+%
+%  Keep this fuller than a real resume -- parsers pull from what is present,
+%  and a human is unlikely to read this version.
+% ===========================================================================
+\documentclass[autofill]{zsresume}
+\input{preamble}
+
+\begin{document}
+
+\Header
+
+\section{EDUCATION}
+\UniversitySWE
+\HighSchool
+
+\section{TECHNICAL EXPERIENCE}
+\TransitFull
+\ClassifierFull
+
+\section{WORK EXPERIENCE}
+\InternFull
+\TA
+
+\section{SKILLS \& INTERESTS}
+\SkillsSWE
+
+\end{document}

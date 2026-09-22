@@ -1,0 +1,89 @@
+% ===========================================================================
+%  TEMPLATE / MENU
+%
+%  Everything available, commented out.  To start a new version:
+%    1. duplicate this file and rename it (e.g. acme.tex)
+%    2. uncomment the lines you want
+%    3. Recompile
+%
+%  Presets are one line each.  If a preset is close but not right, replace it
+%  with the entry line plus a bullets block -- the "hand-built" pattern shown
+%  at the bottom of this file.
+%
+%  When you replace the example content with your own, rewrite this menu too.
+% ===========================================================================
+\documentclass{zsresume}
+\input{preamble}
+
+\begin{document}
+% \squeeze{0.85}      % tighten spacing if it runs just over one page
+
+\Header
+
+% ======================= EDUCATION =========================================
+\section{EDUCATION}
+
+\UniversitySWE        % software course list
+% \UniversityML       % ML course list
+
+\HighSchool
+% \HighSchoolShort    % drops the newspaper from extracurriculars
+
+% ======================= TECHNICAL =========================================
+\section{TECHNICAL EXPERIENCE}
+
+\TransitFull               % 3 bullets: app, API, deploy
+% \TransitShort            % 1 merged bullet
+
+\ClassifierFull            % 3 bullets: model, accuracy, pipeline
+% \ClassifierPipelineFirst % same 3, pipeline first
+% \ClassifierOneLine       % 1 merged bullet
+
+% ======================= WORK ==============================================
+\section{WORK EXPERIENCE}
+
+\InternFull                % service + dashboard + on-call
+% \InternImpact            % same, first bullet leads with the outcome
+% \InternShort             % service + dashboard
+
+\TA
+% \TAShort                 % both bullets merged into one
+
+% ======================= SKILLS ============================================
+\section{SKILLS \& INTERESTS}
+
+\SkillsSWE            % TypeScript/React first
+% \SkillsML           % Python/PyTorch first
+%
+% Grouped blocks, for the skills-early layout (see skills_early.tex):
+% \SkillsGroupedSWE
+% \SkillsGroupedML
+
+\end{document}
+
+
+% ===========================================================================
+%  HAND-BUILDING AN EXPERIENCE
+%
+%  When no preset fits, write the entry line and pick bullets yourself:
+%
+%    \InternEntry
+%    \begin{bullets}
+%      \InternServiceImpact
+%      \InternOnCall
+%    \end{bullets}
+%
+%  Available bullets, by experience:
+%
+%  Transit      \TransitApp \TransitAPI \TransitDeploy \TransitMerged
+%  Classifier   \ClassifierModel \ClassifierAccuracy \ClassifierPipeline
+%               \ClassifierMerged
+%  Intern       \InternService \InternServiceImpact \InternDashboard
+%               \InternOnCall
+%  TA           \TATeaching \TAMentoring \TACombined
+%  Education    \CoursesSWE \CoursesML \UniversityExtras
+%               \HighSchoolExtras \HighSchoolExtrasShort
+%
+%  Alternate entry lines:
+%    \UniversityEntryExpected
+% ===========================================================================

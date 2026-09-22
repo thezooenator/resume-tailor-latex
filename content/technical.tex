@@ -1,0 +1,34 @@
+% ===========================================================================
+%  TECHNICAL EXPERIENCE  (projects, research)
+% ===========================================================================
+
+% ---------------------------------------------------------------- TIER 3 --
+% --- Transit Tracker (full-stack web app) ---------------------------------
+\newcommand{\TransitEntry}{%
+  \entry{Transit Tracker}{(TypeScript, React, Node.js, PostgreSQL, AWS)}{Fall 2025}}
+
+\newcommand{\TransitApp}{\item Built a real-time bus arrival web app serving live GPS feeds to 1,200+ weekly users}
+\newcommand{\TransitAPI}{\item Designed a Node.js REST API with PostgreSQL caching, cutting median response time from 900ms to 120ms}
+\newcommand{\TransitDeploy}{\item Deployed on AWS with a CI pipeline running unit and end-to-end tests on every pull request}
+% Everything in one bullet, for when this project is supporting rather than headline
+\newcommand{\TransitMerged}{\item Built a real-time transit web app (React + Node.js/PostgreSQL on AWS) serving 1,200+ weekly users}
+
+% --- Image Classifier (ML project) ----------------------------------------
+\newcommand{\ClassifierEntry}{%
+  \entry{Plant Disease Classifier}{(Python, PyTorch, NumPy)}{Spring 2025}}
+
+\newcommand{\ClassifierModel}{\item Fine-tuned a convolutional network to classify 38 plant diseases from leaf photographs}
+\newcommand{\ClassifierAccuracy}{\item Reached 94\% validation accuracy, up from a 71\% baseline, through augmentation and learning-rate scheduling}
+\newcommand{\ClassifierPipeline}{\item Wrote a data pipeline that cleans, deduplicates and splits \sm50,000 images for training}
+% Same claims, merged for a shorter entry
+\newcommand{\ClassifierMerged}{\item Fine-tuned a CNN to classify 38 plant diseases at 94\% validation accuracy (from a 71\% baseline)}
+
+% ---------------------------------------------------------------- TIER 1 --
+% Transit:  Full (3) / Short (1)
+\newcommand{\TransitFull}{\TransitEntry\begin{bullets}\TransitApp\TransitAPI\TransitDeploy\end{bullets}}
+\newcommand{\TransitShort}{\TransitEntry\begin{bullets}\TransitMerged\end{bullets}}
+
+% Classifier:  Full (3) / PipelineFirst (3, reordered) / OneLine (1)
+\newcommand{\ClassifierFull}{\ClassifierEntry\begin{bullets}\ClassifierModel\ClassifierAccuracy\ClassifierPipeline\end{bullets}}
+\newcommand{\ClassifierPipelineFirst}{\ClassifierEntry\begin{bullets}\ClassifierPipeline\ClassifierModel\ClassifierAccuracy\end{bullets}}
+\newcommand{\ClassifierOneLine}{\ClassifierEntry\begin{bullets}\ClassifierMerged\end{bullets}}

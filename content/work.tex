@@ -1,0 +1,30 @@
+% ===========================================================================
+%  WORK EXPERIENCE
+% ===========================================================================
+
+% ---------------------------------------------------------------- TIER 3 --
+% --- Software internship --------------------------------------------------
+\newcommand{\InternEntry}{%
+  \entry{Acme Logistics}{Software Engineering Intern}{Springfield, ST | June 2025 - Aug 2025}}
+
+\newcommand{\InternService}{\item Built an internal Python service that reconciles shipment records across three warehouse databases}
+\newcommand{\InternDashboard}{\item Shipped a React dashboard used daily by the operations team to flag delayed orders}
+\newcommand{\InternOnCall}{\item Diagnosed and fixed production data-format bugs during a two-week on-call rotation}
+% Same claim as \InternService, reworded to lead with the outcome
+\newcommand{\InternServiceImpact}{\item Cut manual reconciliation work by 10 hours a week with a Python service syncing three warehouse databases}
+
+% --- Teaching assistant ---------------------------------------------------
+\newcommand{\TAEntry}{%
+  \entry{Example State University}{Teaching Assistant, Intro to Programming}{Springfield, ST | Spring 2024}}
+\newcommand{\TATeaching}{\item Led weekly lab sections of 30 students and graded assignments}
+\newcommand{\TAMentoring}{\item Held office hours and mentored students on final projects}
+\newcommand{\TACombined}{\item Led weekly labs, graded assignments, and mentored students on final projects}
+
+% ---------------------------------------------------------------- TIER 1 --
+% Intern:  Full (3) / Impact (3, outcome-first wording) / Short (2)
+\newcommand{\InternFull}{\InternEntry\begin{bullets}\InternService\InternDashboard\InternOnCall\end{bullets}}
+\newcommand{\InternImpact}{\InternEntry\begin{bullets}\InternServiceImpact\InternDashboard\InternOnCall\end{bullets}}
+\newcommand{\InternShort}{\InternEntry\begin{bullets}\InternService\InternDashboard\end{bullets}}
+
+\newcommand{\TA}{\TAEntry\begin{bullets}\TATeaching\TAMentoring\end{bullets}}
+\newcommand{\TAShort}{\TAEntry\begin{bullets}\TACombined\end{bullets}}

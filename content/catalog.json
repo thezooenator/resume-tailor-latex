@@ -1,0 +1,46 @@
+{
+  "_comment": "Everything build.py knows about YOUR content lives here. When you add a preset to content/*.tex, add it to 'presets' too (build.py warns when they drift). 'selection_rules' are extra rules appended to the model's system prompt. 'grouped_skills' maps each flat skills preset to its grouped counterpart for the skills-early layout; 'flat_skills' is the reverse.",
+
+  "presets": {
+    "education": {
+      "UniversitySWE":   "Example State University B.S. CS, GPA 3.8 | courses: Software Engineering, Databases, Distributed Systems, Networks | extracurriculars",
+      "UniversityML":    "Example State University B.S. CS, GPA 3.8 | courses: ML, Deep Learning, Computer Vision, Linear Algebra, Statistics | extracurriculars",
+      "HighSchool":      "Springfield High School | GPA 4.0 | FIRST Robotics Captain, Math Team, Track, Newspaper",
+      "HighSchoolShort": "Springfield High School | GPA 4.0 | FIRST Robotics Captain, Math Team, Track (shorter)"
+    },
+    "technical": {
+      "TransitFull":             "Transit Tracker (TypeScript, React, Node.js, PostgreSQL, AWS) — 3 bullets: real-time app with 1,200+ weekly users, REST API caching 900ms→120ms, AWS deploy + CI",
+      "TransitShort":            "Transit Tracker — 1 merged bullet (minimum space)",
+      "ClassifierFull":          "Plant Disease Classifier (Python, PyTorch, NumPy) — 3 bullets: CNN fine-tune on 38 classes, 94% accuracy from 71% baseline, 50k-image data pipeline",
+      "ClassifierPipelineFirst": "Same as ClassifierFull but leads with the data pipeline bullet (better for data-engineering roles)",
+      "ClassifierOneLine":       "Plant Disease Classifier — 1 merged bullet (minimum space)"
+    },
+    "work": {
+      "InternFull":   "Acme Logistics SWE Intern — 3 bullets: Python reconciliation service, React ops dashboard, on-call bug fixing",
+      "InternImpact": "Same as InternFull but the first bullet leads with the outcome (10 hours/week saved)",
+      "InternShort":  "Acme Logistics SWE Intern — 2 bullets: Python service + React dashboard",
+      "TA":           "Teaching Assistant, Intro to Programming — 2 bullets: led labs/graded + mentored projects",
+      "TAShort":      "Teaching Assistant — 1 combined bullet"
+    },
+    "skills": {
+      "SkillsSWE":        "TypeScript, JavaScript, Python, Java, SQL, HTML/CSS | React, Node.js, PostgreSQL, AWS, Docker, Git, Jest",
+      "SkillsML":         "Python, SQL, TypeScript, Java | PyTorch, NumPy, pandas, scikit-learn, Docker, AWS, Git",
+      "SkillsGroupedSWE": "Skills-early grouped block, 4 lines (Languages | Web & Backend | Cloud & Tooling | Interests)",
+      "SkillsGroupedML":  "Skills-early grouped block, 4 lines (Languages | Machine Learning | Cloud & Tooling | Interests)"
+    }
+  },
+
+  "selection_rules": [
+    "education: typically [a University variant, a HighSchool variant]",
+    "work: 1-2 items. Always include some version of the internship"
+  ],
+
+  "grouped_skills": {
+    "SkillsSWE": "SkillsGroupedSWE",
+    "SkillsML":  "SkillsGroupedML"
+  },
+  "flat_skills": {
+    "SkillsGroupedSWE": "SkillsSWE",
+    "SkillsGroupedML":  "SkillsML"
+  }
+}
