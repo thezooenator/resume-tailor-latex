@@ -33,8 +33,10 @@ import anthropic
 # ── Paths ─────────────────────────────────────────────────────────────────────
 REPO     = Path(__file__).parent
 MEMORY   = REPO / "memory.json"
-# pdflatex on PATH, falling back to where MacTeX/BasicTeX install it.
-PDFLATEX = shutil.which("pdflatex") or "/Library/TeX/texbin/pdflatex"
+# The TeX engine on PATH, falling back to where MacTeX/BasicTeX install it.
+# RESUME_TEX=xelatex (or lualatex) is needed for \SetSystemFont in style.tex.
+_ENGINE  = os.environ.get("RESUME_TEX", "pdflatex")
+PDFLATEX = shutil.which(_ENGINE) or f"/Library/TeX/texbin/{_ENGINE}"
 MODEL    = os.environ.get("RESUME_MODEL", "claude-opus-5")
 
 # Generated files stay out of the repo root: sources in one folder, PDFs in
@@ -109,7 +111,7 @@ def validate_catalog():
         print("ERROR: CATALOG names with no \\newcommand in content/*.tex:")
         for name in missing:
             print(f"    \\{name}")
-        print("\nFix the spelling in build.py, or define the preset in content/.")
+        print("\nFix the spelling in content/catalog.json, or define the preset in content/.")
         sys.exit(1)
 
     # Preset-like = not a bullet (\item...) and not a bare entry header (\entry...).
@@ -191,9 +193,21 @@ SECTION_HEADINGS = {
     "work":      r"\section{WORK EXPERIENCE}",
     "skills":    r"\section{SKILLS \& INTERESTS}",
 }
+
+# catalog.json may rename any heading: "section_headings": {"work":
+# "Experience", "skills_early": "Skills", ...}.  Plain text is escaped for
+# & and %; anything else is passed to LaTeX as written.
+def _heading(text: str) -> str:
+    return r"\section{" + text.replace("\\&", "&").replace("&", r"\&").replace("%", r"\%") + "}"
 # Promoted out of last place, the skills block is the claim being made rather
 # than a footnote of hobbies, so the heading changes with the position.
 SKILLS_EARLY_HEADING = r"\section{TECHNICAL SKILLS}"
+_custom = _CATALOG_DATA.get("section_headings", {})
+for _key, _text in _custom.items():
+    if _key == "skills_early":
+        SKILLS_EARLY_HEADING = _heading(_text)
+    elif _key in SECTION_HEADINGS:
+        SECTION_HEADINGS[_key] = _heading(_text)
 MIDDLE_SECTIONS = ["technical", "work"]
 DEFAULT_SECTION_ORDER = ["education"] + MIDDLE_SECTIONS + ["skills"]
 

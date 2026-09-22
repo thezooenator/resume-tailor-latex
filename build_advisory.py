@@ -40,7 +40,9 @@ import anthropic
 # ── Paths ─────────────────────────────────────────────────────────────────────
 REPO     = Path(__file__).parent
 MEMORY   = REPO / "memory.json"
-PDFLATEX = shutil.which("pdflatex") or "/Library/TeX/texbin/pdflatex"
+# RESUME_TEX=xelatex (or lualatex) is needed for \SetSystemFont in style.tex.
+_ENGINE  = os.environ.get("RESUME_TEX", "pdflatex")
+PDFLATEX = shutil.which(_ENGINE) or f"/Library/TeX/texbin/{_ENGINE}"
 MODEL    = os.environ.get("RESUME_MODEL", "claude-opus-5")
 
 # Generated files stay out of the repo root: sources in one folder, PDFs in
@@ -323,6 +325,17 @@ SECTION_HEADINGS = {
     "work":      r"\section{WORK EXPERIENCE}",
     "skills":    r"\section{SKILLS \& INTERESTS}",
 }
+
+# catalog.json may rename any heading: "section_headings": {"work":
+# "Experience", "skills_early": "Skills", ...}.  Plain text is escaped for
+# & and %; anything else is passed to LaTeX as written.
+def _heading(text: str) -> str:
+    return r"\section{" + text.replace("\\&", "&").replace("&", r"\&").replace("%", r"\%") + "}"
+
+
+for _key, _text in _CATALOG_DATA.get("section_headings", {}).items():
+    if _key in SECTION_HEADINGS:
+        SECTION_HEADINGS[_key] = _heading(_text)
 MIDDLE_SECTIONS = ["technical", "work"]
 DEFAULT_SECTION_ORDER = ["education"] + MIDDLE_SECTIONS + ["skills"]
 

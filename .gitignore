@@ -1,3 +1,7 @@
+# Your source resumes -- read by the AI when personalizing, never committed
+my_resumes/*
+!my_resumes/README.md
+
 # Your job-search history -- build.py writes this, never commit it
 memory.json
 memory.json.bak

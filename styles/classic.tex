@@ -1,0 +1,44 @@
+% ===========================================================================
+%  CLASSIC -- the default look, with every setting written out.
+%  Copy any line into style.tex and change it there.
+% ===========================================================================
+
+% Font ----------------------------------------------------------------------
+\SetFont{times}             % times . lmodern . lmodern-sans  (always available)
+                            % palatino . helvetica . bookman . newcentury
+                            %   (full TeX Live / Overleaf, or tlmgr install)
+% \SetSystemFont{Garamond}  % any installed font; needs XeLaTeX (RESUME_TEX=xelatex)
+
+% Colour, bullets, header ---------------------------------------------------
+\SetAccentColor{000000}     % hex, used for name, headings and rules
+\SetBullet{\textbullet}
+\SetBulletSize{13.2bp}
+\SetHeaderAlign{center}     % center . left
+\SetContactSeparator{ | }
+\SetPaper{letter}           % letter . a4
+
+% Margins -------------------------------------------------------------------
+\setlength{\zsMarginLeft}{36bp}
+\setlength{\zsMarginRight}{36bp}
+\setlength{\zsMarginTop}{26.5bp}
+\setlength{\zsMarginBottom}{28bp}
+
+% Type sizes, each with its leading (baseline-to-baseline distance) ---------
+\setlength{\zsBodySize}{11bp}     \setlength{\zsBodyLead}{12bp}
+\setlength{\zsOrgSize}{12bp}      \setlength{\zsEntryLead}{13.7bp}
+\setlength{\zsSectionSize}{14bp}  \setlength{\zsSecLead}{16.1bp}
+\setlength{\zsNameSize}{20bp}
+\setlength{\zsContactSize}{10bp}  \setlength{\zsContactLead}{13.6bp}
+
+% Section rule --------------------------------------------------------------
+\setlength{\zsRuleThick}{1.5bp}   % 0bp removes the rule
+\setlength{\zsRuleDrop}{5.08bp}   % how far below the heading baseline
+
+% Spacing between things ----------------------------------------------------
+\setlength{\zsEntryBefore}{5.1bp}   % above each entry
+\setlength{\zsEntryAfter}{1.7bp}    % entry header -> first bullet
+\setlength{\zsSecBefore}{7.1bp}     % above each section heading
+\setlength{\zsSecAfter}{0.2bp}      % section heading -> first entry
+\setlength{\zsSkillBefore}{2.8bp}   % between skills lines
+\setlength{\zsBulletIndent}{36bp}   % bullet text, from the margin
+\setlength{\zsBulletMark}{18bp}     % bullet glyph, from the margin
