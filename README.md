@@ -75,6 +75,14 @@ rebuilds. It saves each job, its first pick, its final pick and your feedback
 to `memory.json`, and uses that history to make better first picks next time.
 `memory.json` is gitignored.
 
+Claude sees the 40 most recent jobs word for word. Older ones aren't thrown
+away: before a job drops out of that window, Claude folds it into a short
+running summary of lasting lessons (which presets suit which roles, what you
+corrected), saved in `memory_summary.json` and sent with every prompt. The
+`selection_rules` in `catalog.json` win wherever the summary disagrees. To
+start the summary over, delete `memory_summary.json`; it also resets itself
+if you clear `memory.json`. Both files are gitignored.
+
 | flag | effect |
 |---|---|
 | `-c`, `--clipboard` | read the JD from the clipboard (otherwise: argument, file path, stdin, or paste) |
@@ -212,6 +220,19 @@ lines, and below `0.6` it looks cramped. `build.py` finds the value for you.
 It compiles at `1.0`, reads the page count, and steps down through `1.0, 0.90,
 0.85, 0.80, 0.72, 0.62` until the resume fits. If it still doesn't fit, it
 tells you, and you can ask for shorter presets.
+
+Claude also plans the length up front. `line_budget.py` measures how tall each
+preset in `catalog.json` is, in lines (one line = the gap between two bullet
+lines). Heights are rarely whole numbers, because the gaps around entries and
+headings are smaller than a line. Claude sees each preset as
+`[4.7 lines] ...` along with how many lines the page has room for, and aims to
+leave 0–2 lines free (or run up to 1.5 over, which tighter spacing absorbs).
+After each build the terminal shows how much room was left, and that number is
+saved to memory.
+
+Measuring takes about a second and is cached in `preset_heights.json`
+(gitignored). It re-runs by itself whenever `content/`, `catalog.json`, the
+style files, the class or the TeX engine change.
 
 ## The autofill version
 

@@ -5,6 +5,10 @@ my_resumes/*
 # Your job-search history -- build.py writes this, never commit it
 memory.json
 memory.json.bak
+memory_summary.json
+
+# Measured preset heights -- a cache line_budget.py rebuilds by itself
+preset_heights.json
 
 # Build output
 GeneratedTex/

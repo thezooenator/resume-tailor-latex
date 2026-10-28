@@ -30,9 +30,12 @@ from pathlib import Path
 
 import anthropic
 
+import line_budget as lb
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 REPO     = Path(__file__).parent
 MEMORY   = REPO / "memory.json"
+MEMORY_SUMMARY = REPO / "memory_summary.json"
 # The TeX engine on PATH, falling back to where MacTeX/BasicTeX install it.
 # RESUME_TEX=xelatex (or lualatex) is needed for \SetSystemFont in style.tex.
 _ENGINE  = os.environ.get("RESUME_TEX", "pdflatex")
@@ -171,11 +174,10 @@ Rules:
 - jd_summary: one compact line, under 200 characters. This is all that gets
   stored in memory, so keep the details that would change a preset choice
 - gaps: be honest — list specific missing technologies or experiences
-- length: the builder tightens line spacing automatically until the page fits,
-  so don't ask for spacing changes. But past entries showing a tight fit
-  (squeeze 0.72 or lower, or "still over one page") mean that much content does
-  not fit — for a similar posting, prefer the shorter variants (*Short,
-  *Condensed, *OneLine, one fewer technical entry)\
+- length: every preset shows its measured height as [N lines], and the
+  PAGE BUDGET says how many lines the presets may total. Plan to that budget
+  instead of guessing from bullet counts. The builder tightens spacing
+  automatically for small overruns, so don't ask for spacing changes\
 """
 # Rules specific to your content (which entries always appear, which presets
 # need care) come from catalog.json rather than being written in here.
@@ -246,60 +248,148 @@ def _feedback_lines(entry: dict) -> list:
     return [f for f in fb if f]
 
 
+# ── Long-term memory ─────────────────────────────────────────────────────────
+# Only the last MEMORY_WINDOW sessions go into the prompt verbatim.  Sessions
+# older than that are not dropped: before they leave the window, Claude folds
+# them into a running summary of durable lessons, which rides along with every
+# prompt.  memory.json itself is never trimmed -- the summary file records how
+# many of its oldest entries have been folded in, so each session is
+# summarized exactly once.
+
+SUMMARY_PROMPT = """\
+You maintain the long-term memory of a resume-tailoring assistant that picks \
+resume presets for job descriptions. You are given the current long-term \
+summary (possibly empty) and older sessions that are about to leave the \
+assistant's recent-session window. Return an updated summary of durable \
+lessons: which presets suit which kinds of roles, corrections the user made \
+and the preferences behind them, and page-length lessons. Merge with the \
+existing summary; where newer feedback contradicts older, keep the newer. \
+Drop one-off details such as individual company names. Plain bullet list \
+starting with "- ", at most 15 bullets, under 1500 characters. Return only \
+the list.\
+"""
+
+
+def load_summary() -> dict:
+    if MEMORY_SUMMARY.exists():
+        return json.loads(MEMORY_SUMMARY.read_text())
+    return {"summary": "", "summarized_through": 0}
+
+
+def refresh_long_term_memory(entries: list) -> None:
+    """Fold sessions that have aged out of the window into the summary."""
+    state = load_summary()
+    if state["summarized_through"] > len(entries):
+        # memory.json was cleared or replaced; the summary describes sessions
+        # that no longer exist, so start over.
+        MEMORY_SUMMARY.unlink()
+        state = load_summary()
+    cutoff = max(0, len(entries) - MEMORY_WINDOW)
+    start = state["summarized_through"]
+    if cutoff <= start:
+        return
+
+    aged_out = entries[start:cutoff]
+    print(f"Summarizing {len(aged_out)} older session(s) into long-term memory...")
+    sessions = "\n".join(line for e in aged_out for line in _entry_lines(e))
+    try:
+        response = anthropic.Anthropic().messages.create(
+            model=MODEL,
+            max_tokens=1024,
+            system=SUMMARY_PROMPT,
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"CURRENT SUMMARY:\n{state['summary'] or '(empty)'}\n\n"
+                    f"SESSIONS TO FOLD IN:\n{sessions}"
+                ),
+            }],
+        )
+    except anthropic.APIError as err:
+        # A failed summary should never block a build; these sessions are
+        # retried next run.
+        print(f"Warning: long-term memory not updated ({err}).")
+        return
+
+    summary = next((b.text for b in response.content if b.type == "text"), "").strip()
+    if not summary:
+        print("Warning: long-term memory not updated (empty summary).")
+        return
+    MEMORY_SUMMARY.write_text(json.dumps(
+        {"summary": summary, "summarized_through": cutoff}, indent=2))
+
+
 def memory_context(entries: list) -> str:
     if not entries:
         return "No prior sessions."
-    recent = entries[-MEMORY_WINDOW:]
-    lines = ["Past sessions (most recent last) — use feedback to improve this selection:"]
-    for e in recent:
-        lines.append(f"\n[{e['timestamp'][:10]}] {e.get('company','?')} — {e.get('role','?')}")
-        # Entries predating jd_summary have no usable description of the JD.  The
-        # opening lines of a posting are company boilerplate, so showing those
-        # would be misleading filler — company, role, and feedback carry the
-        # signal instead.
-        summary = e.get("jd_summary", "")
-        if summary:
-            lines.append(f"  JD:         {summary}")
-
-        first = e.get("initial_selected")
-        sel = e.get("selected", {})
-        fb = _feedback_lines(e)
-
-        if first and first != sel:
-            lines.append(f"  first pick: education={first.get('education', [])} "
-                         f"technical={first.get('technical', [])} "
-                         f"work={first.get('work', [])} skills={first.get('skills', '')}")
-            label = "  final:     "
-        else:
-            label = "  selected:  "
-        lines.append(f"{label} education={sel.get('education', [])} "
-                     f"technical={sel.get('technical', [])} "
-                     f"work={sel.get('work', [])} skills={sel.get('skills', '')}")
-
-        order = sel.get("order")
-        if order and order != DEFAULT_SECTION_ORDER:
-            lines.append(f"  order:      {' -> '.join(order)}")
-
-        # How hard the page had to be squeezed to fit is a length signal the
-        # model can act on: a tight dial means that selection was near the
-        # limit, and a selection that never fit means it was over it.
-        sq = sel.get("squeeze")
-        if sq is not None and sq < 1.0:
-            note = " (still over one page — too long)" if sel.get("pages", 1) > 1 else ""
-            lines.append(f"  fit:        needed squeeze {sq:.2f} to fit one page{note}")
-
-        if fb:
-            for i, f in enumerate(fb, 1):
-                lines.append(f"  feedback {i}: {f}")
-        else:
-            lines.append("  feedback:   (accepted as-is)")
+    lines = []
+    summary = load_summary()
+    if summary["summary"]:
+        lines.append(f"Long-term lessons (summarized from "
+                     f"{summary['summarized_through']} older sessions; the selection "
+                     f"rules take precedence where they conflict):")
+        lines.append(summary["summary"])
+        lines.append("")
+    lines.append("Past sessions (most recent last) — use feedback to improve this selection:")
+    for e in entries[-MEMORY_WINDOW:]:
+        lines.extend(_entry_lines(e))
     return "\n".join(lines)
+
+
+def _entry_lines(e: dict) -> list:
+    """One session rendered for a prompt: JD, picks, fit, and feedback."""
+    lines = [f"\n[{e['timestamp'][:10]}] {e.get('company','?')} — {e.get('role','?')}"]
+    # Entries predating jd_summary have no usable description of the JD.  The
+    # opening lines of a posting are company boilerplate, so showing those
+    # would be misleading filler — company, role, and feedback carry the
+    # signal instead.
+    summary = e.get("jd_summary", "")
+    if summary:
+        lines.append(f"  JD:         {summary}")
+
+    first = e.get("initial_selected")
+    sel = e.get("selected", {})
+    fb = _feedback_lines(e)
+
+    if first and first != sel:
+        lines.append(f"  first pick: education={first.get('education', [])} "
+                     f"technical={first.get('technical', [])} "
+                     f"work={first.get('work', [])} skills={first.get('skills', '')}")
+        label = "  final:     "
+    else:
+        label = "  selected:  "
+    lines.append(f"{label} education={sel.get('education', [])} "
+                 f"technical={sel.get('technical', [])} "
+                 f"work={sel.get('work', [])} skills={sel.get('skills', '')}")
+
+    order = sel.get("order")
+    if order and order != DEFAULT_SECTION_ORDER:
+        lines.append(f"  order:      {' -> '.join(order)}")
+
+    # How hard the page had to be squeezed to fit is a length signal the
+    # model can act on: a tight dial means that selection was near the
+    # limit, and a selection that never fit means it was over it.
+    sq = sel.get("squeeze")
+    if sq is not None and sq < 1.0:
+        note = " (still over one page — too long)" if sel.get("pages", 1) > 1 else ""
+        lines.append(f"  fit:        needed squeeze {sq:.2f} to fit one page{note}")
+    free = sel.get("free_lines")
+    if free is not None:
+        lines.append(f"  space:      {lb.describe_free(free)}")
+
+    if fb:
+        for i, f in enumerate(fb, 1):
+            lines.append(f"  feedback {i}: {f}")
+    else:
+        lines.append("  feedback:   (accepted as-is)")
+    return lines
 
 
 # ── Claude ────────────────────────────────────────────────────────────────────
 
 def call_claude(jd: str, memory: list) -> dict:
     client = anthropic.Anthropic()
+    heights = lb.load_heights(PDFLATEX)
     response = client.messages.create(
         model=MODEL,
         max_tokens=4096,
@@ -308,7 +398,8 @@ def call_claude(jd: str, memory: list) -> dict:
             "role": "user",
             "content": (
                 f"JOB DESCRIPTION:\n{jd}\n\n"
-                f"PRESET CATALOG:\n{json.dumps(CATALOG, indent=2)}\n\n"
+                f"PRESET CATALOG:\n{json.dumps(lb.annotate_catalog(CATALOG, heights), indent=2)}\n\n"
+                f"PAGE BUDGET:\n{lb.budget_text(heights)}\n\n"
                 f"MEMORY:\n{memory_context(memory)}\n\n"
                 "Select the best presets for this job."
             ),
@@ -617,6 +708,7 @@ def main():
     validate_catalog()
 
     memory = load_memory()
+    refresh_long_term_memory(memory)
     print("Analyzing job description...")
 
     selection = call_claude(jd, memory)
@@ -649,7 +741,8 @@ def main():
         pdf, used, pages = build_fitted(sel, base, pinned=squeeze_pin)
         sel["squeeze"] = used
         sel["pages"] = pages
-        print(f"→ {pdf.name}")
+        sel["free_lines"] = lb.predict_free(sel, lb.load_heights(PDFLATEX))
+        print(f"→ {pdf.name}  ({lb.describe_free(sel['free_lines'])})")
 
         if autofill:
             # The autofill version is allowed to run long, so it skips the fit
@@ -682,6 +775,7 @@ def main():
             # at 0.62 was too long, and that is worth remembering next time.
             "squeeze":   sel.get("squeeze", 1.0),
             "pages":     sel.get("pages", 0),
+            "free_lines": sel.get("free_lines"),
         }
 
     entry = {
